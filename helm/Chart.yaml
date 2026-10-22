@@ -2,5 +2,5 @@ apiVersion: v2
 name: kb-proxy
 description: OpenAI-compatible KB Proxy for HPE AIE Knowledge Base
 version: 0.1.2
-appVersion: "0.1.1"
+appVersion: "0.1.2"
 type: application

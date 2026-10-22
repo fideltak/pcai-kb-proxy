@@ -191,7 +191,6 @@ def health():
     return {"status": "ok"}
 
 
-
 @app.get("/v1/models")
 async def list_models(request: Request):
     token = get_bearer_token(request)
@@ -205,32 +204,32 @@ async def list_models(request: Request):
     if status == 200:
         # New RAG Coordinator
         logger.info(
-            "[%s] RAG Coordinator models API available",
+            "[%s] PCAI RAG Coordinator models API available",
             request.state.request_id
         )
 
     elif status == 404:
         # Legacy RAG Coordinator
         logger.info(
-            "[%s] Legacy RAG Coordinator detected (models API unavailable)",
+            "[%s] Legacy PCAI RAG Coordinator detected (models API unavailable)",
             request.state.request_id
         )
 
     elif status in (401, 403):
         raise HTTPException(
             status_code=status,
-            detail="RAG Coordinator rejected credentials"
+            detail="PCAI RAG Coordinator rejected credentials"
         )
 
     else:
         logger.error(
-            "[%s] Unexpected RAG Coordinator status: HTTP %s",
+            "[%s] Unexpected PCAI RAG Coordinator status: HTTP %s",
             request.state.request_id,
             status
         )
         raise HTTPException(
             status_code=502,
-            detail="RAG Coordinator authentication check failed"
+            detail="PCAI RAG Coordinator authentication check failed"
         )
 
     return {
