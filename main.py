@@ -191,24 +191,57 @@ def health():
     return {"status": "ok"}
 
 
+
 @app.get("/v1/models")
 async def list_models(request: Request):
     token = get_bearer_token(request)
 
-    response = await forward(request, "GET", "/v1/models", token)
-    if response.status_code in (401, 403):
-        logger.warning("[%s] Model listing authentication rejected: HTTP %s",
-                       request.state.request_id, response.status_code)
-        raise HTTPException(status_code=response.status_code,
-                            detail="PCAI RAG Coordinator rejected credentials")
-    if response.status_code != 404:
-        logger.error("[%s] Unexpected authentication probe status: HTTP %s",
-                     request.state.request_id, response.status_code)
-        raise HTTPException(status_code=502,
-                            detail="Unexpected response from PCAI RAG Coordinator authentication probe")
+    response = await forward(
+        request, "GET", "/v1/models", token
+    )
 
-    return {"object": "list", "data": [{"id": CONFIG["PROXY_NAME"], "object": "model", "created": 0,
-                                         "owned_by": "kb-proxy"}]}
+    status = response.status_code
+
+    if status == 200:
+        # New RAG Coordinator
+        logger.info(
+            "[%s] RAG Coordinator models API available",
+            request.state.request_id
+        )
+
+    elif status == 404:
+        # Legacy RAG Coordinator
+        logger.info(
+            "[%s] Legacy RAG Coordinator detected (models API unavailable)",
+            request.state.request_id
+        )
+
+    elif status in (401, 403):
+        raise HTTPException(
+            status_code=status,
+            detail="RAG Coordinator rejected credentials"
+        )
+
+    else:
+        logger.error(
+            "[%s] Unexpected RAG Coordinator status: HTTP %s",
+            request.state.request_id,
+            status
+        )
+        raise HTTPException(
+            status_code=502,
+            detail="RAG Coordinator authentication check failed"
+        )
+
+    return {
+        "object": "list",
+        "data": [{
+            "id": CONFIG["PROXY_NAME"],
+            "object": "model",
+            "created": 0,
+            "owned_by": "kb-proxy"
+        }]
+    }
 
 
 @app.post("/v1/chat/completions")
