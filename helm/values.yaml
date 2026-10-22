@@ -1,0 +1,58 @@
+ezua:
+  virtualService:
+    enabled: true
+    # Set your AIE endpoint as a DNS hostname, without https://
+    endpoint: ""
+    istioGateway: "istio-system/ezaf-gateway"
+
+replicaCount: 1
+
+image:
+  repository: "docker.io/fideltak/pcai-kb-proxy"
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+podLabels: {}
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+
+containerPort: 8080
+
+env:
+  BASE_URL: "" # Set your RAG Cordinator URL
+  HOST: "0.0.0.0"
+  PORT: "8080"
+  VERIFY_SSL: "false"
+  TIMEOUT: "300"
+  SA_NAME: "" # Set your SA name
+  ENABLE_CITATIONS: "true"
+  MODEL_NAME: "" # Set your RAG Cordinator Model Name
+  PROXY_NAME: "HPE-PCAI-KB-PROXY"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: [ALL]
+  runAsNonRoot: true
+  runAsUser: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

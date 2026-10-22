@@ -1,0 +1,23 @@
+{{- if .Values.ezua.virtualService.enabled }}
+{{- $host := required "ezua.virtualService.endpoint must be set when VirtualService is enabled" .Values.ezua.virtualService.endpoint }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "kb-proxy.fullname" . }}
+  labels:
+    {{- include "kb-proxy.labels" . | nindent 4 }}
+spec:
+  hosts:
+    - {{ $host | quote }}
+  gateways:
+    - {{ .Values.ezua.virtualService.istioGateway | quote }}
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: {{ include "kb-proxy.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+            port:
+              number: {{ .Values.service.port }}
+{{- end }}
