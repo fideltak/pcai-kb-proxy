@@ -8,8 +8,6 @@ ezua:
 replicaCount: 1
 
 image:
-  repository: "docker.io/fideltak/pcai-kb-proxy"
-  tag: "0.1.2"
   pullPolicy: IfNotPresent
 imagePullSecrets: []
 
@@ -26,6 +24,7 @@ service:
 containerPort: 8080
 
 env:
+  DEBUG: "false"
   BASE_URL: "" # Set your RAG Cordinator URL
   HOST: "0.0.0.0"
   PORT: "8080"
@@ -33,6 +32,7 @@ env:
   TIMEOUT: "300"
   SA_NAME: "" # Set your SA name
   ENABLE_CITATIONS: "true"
+  ENABLE_TRACING: "true"
   MODEL_NAME: "" # Set your RAG Cordinator Model Name
   PROXY_NAME: "HPE-PCAI-KB-PROXY"
 
